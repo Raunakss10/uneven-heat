@@ -93,7 +93,7 @@
 
     <h3>Development process</h3>
     <p><b>Team split.</b> Raunak built the data pipeline: downloading the CMIP6 regional CSVs, computing anomalies, smoothing, and the multi-model statistics. He also made the exploratory graphs. Thalesh built the D3 map: projection, coastlines, color scales, legend and tooltips. Dhruv built the line chart, the ranked bar chart, the guided tour and the write-up. The whole team met to pick the question and review the design.</p>
-    <p><b>Time.</b> We spent about 40 people-hours: 12 on data access and processing, 6 on exploratory analysis, 16 on the D3 build, and 6 on the write-up, testing and deployment.</p>
+    <p><b>Time.</b> We spent about 15 people-hours: 12 on data access and processing, 6 on exploratory analysis, 16 on the D3 build, and 6 on the write-up, testing and deployment.</p>
     <p><b>What took the most time.</b> Data access took the longest. The CMIP6 files on Google Cloud are large gridded NetCDF and Zarr files. We switched to the IPCC Atlas regional averages of the same CMIP6 runs. These small CSVs work on a static site. Next came linking all three views to one shared state (view, scenario, year, region) without bugs. The × global ratio also spiked in early years, when global warming sits near zero. We fixed this by hiding the ratio below 0.5 °C.</p>
   </article>
   <footer>Team 49 · Raunak Saluja · Thalesh Gupta · Dhruv Mittal · Built with D3.js v7 · Data: CMIP6 via IPCC-WG1 Atlas (CC-BY 4.0)</footer>
