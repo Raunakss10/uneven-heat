@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uneven Heat | DSC 106 Project 3</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">DSC 106 · Project 3 · Team 49</p>
+    <h1>Uneven Heat: where will warming hit hardest?</h1>
+    <p class="sub">Climate change hits some places harder than others. Pick an emissions future and a year. Then compare how much each of the 58 IPCC regions warms, or how its rainfall changes, across 8 CMIP6 climate models.</p>
+  </header>
+
+  <section class="tour" aria-label="Guided tour">
+    <span class="tour-label">Start here →</span>
+    <div class="tour-btns" id="tour"></div>
+  </section>
+  <div class="story" id="story" aria-live="polite"></div>
+
+  <section class="controls" aria-label="Controls">
+    <div class="ctl"><span class="ctl-label">Show</span><div class="seg" id="measure"></div></div>
+    <div class="ctl"><span class="ctl-label">Emissions future</span><div class="seg" id="scen"></div></div>
+    <div class="ctl year"><span class="ctl-label">Year</span>
+      <span id="yearLabel">2050</span>
+      <input type="range" id="year" min="1950" max="2100" value="2050" step="1" aria-label="Year">
+      <button id="play" class="btn">▶ Play</button>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="card map-card">
+      <p class="chart-title" id="mapTitle"></p>
+      <p class="chart-sub" id="mapSub"></p>
+      <svg id="map" viewBox="0 0 960 500" role="img" aria-label="World map of IPCC regions colored by the selected measure"></svg>
+      <div id="legend"></div>
+      <p class="hint">Hover a region to see its value. Click a region to see its full history on the right. Click again to return to the world view.</p>
+    </div>
+    <div class="side">
+      <div class="card">
+        <p class="chart-title" id="detailTitle">World</p>
+        <p class="chart-sub" id="detailSub"></p>
+        <svg id="line" viewBox="0 0 440 300" role="img" aria-label="Line chart for the selected region"></svg>
+        <div class="key" id="lineKey"></div>
+      </div>
+      <div class="card">
+        <p class="chart-title" id="rankTitle"></p>
+        <p class="chart-sub" id="rankSub"></p>
+        <svg id="rank" viewBox="0 0 440 250" role="img" aria-label="Ranked regions"></svg>
+      </div>
+    </div>
+  </section>
+
+  <div class="data-note">
+    <p><b>Data and transformations.</b> We use CMIP6 near-surface air temperature (tas) and precipitation (pr) from 8 models: ACCESS-CM2, CanESM5, EC-Earth3, IPSL-CM6A-LR, MIROC6, MPI-ESM1-2-LR, MRI-ESM2-0 and NorESM2-LM (run r1i1p1f1). Each model covers the historical period plus SSP1-2.6, SSP2-4.5, SSP3-7.0 and SSP5-8.5. The <a href="https://github.com/IPCC-WG1/Atlas">IPCC-WG1 Atlas</a> averages each model over the IPCC AR6 reference regions.</p>
+    <ol>
+      <li>We average monthly values into yearly values.</li>
+      <li>We convert temperature into warming relative to each model's 1850–1900 average, and rainfall into % change vs. 1995–2014.</li>
+      <li>We smooth each model with a 10-year centered rolling mean.</li>
+      <li>We average the 8 models. The shaded band in the line chart shows the min to max across models.</li>
+    </ol>
+    <p>The × global view divides regional warming by global warming for the same year and scenario. The map shows this ratio only after global warming passes 0.5 °C, to avoid dividing by values near zero.</p>
+  </div>
+
+  <article class="writeup" id="writeup">
+    <h2>Write-up</h2>
+
+    <h3>Motivation</h3>
+    <p>Most people hear "2 degrees of warming" and picture the same change everywhere. Our exploratory graphs showed otherwise. The Arctic warms about 3× faster than the global average. The Mediterranean loses about 20% of its rain under the highest emissions scenario, while South Asia gets wetter. The gap between emissions scenarios also changes by region.</p>
+    <p>Our question: where will warming hit hardest, and how much does our emissions path change the answer? We built the page so you find your own region and compare all four futures there.</p>
+
+    <h3>Design rationale</h3>
+    <p><b>Map.</b> Our question asks where, so the map leads the page. We use the 58 IPCC AR6 regions because the Atlas data comes aggregated this way, and each region is large enough to hover and click. Coastlines sit on top so you see the land. A choropleth gives large regions, such as oceans, more visual weight. The ranked bar chart offsets this by comparing regions by bar length on a shared axis.</p>
+    <p><b>Color.</b> Each view uses a scale matched to its data type.</p>
+    <ul>
+      <li>Warming uses a single-hue orange-red sequential scale. Darker means more warming.</li>
+      <li>The × global view uses a diverging blue-red scale centered at 1. Blue regions warm slower than the planet. Red regions warm faster.</li>
+      <li>Rainfall uses a diverging brown-teal scale centered at 0. Brown means drier and teal means wetter. This avoids a red-green pairing.</li>
+    </ul>
+    <p>We clamp each scale at the ends so a few extreme Arctic values do not wash out the rest. A "+" on the legend marks the clamp.</p>
+    <p><b>Line chart.</b> Click a region to see its 1950–2100 history for all four scenarios. The chosen scenario stands out, with the model range shaded behind. Position on a shared y-axis gives the most accurate comparison between scenarios. A dashed line shows the global average for reference. A vertical line marks the slider year, so the map and chart stay linked.</p>
+    <p><b>Ranked bars.</b> The bar chart lists the top regions for the current view: the top 8 for warming, and the 4 wettest plus 4 driest for rainfall. Click a bar to select the region on the map.</p>
+    <p><b>Interactions.</b> The scenario buttons and year slider act as dynamic queries over the two dimensions our question cares about. Play animates time, so you watch the Arctic darken. Tooltips give exact values on demand. The four guided tour buttons jump to the views we found most interesting and add a short note. A first-time visitor sees the main patterns in under a minute, then explores freely.</p>
+    <p><b>Alternatives we tried.</b></p>
+    <ul>
+      <li>Small multiples of 4 maps, one per scenario. Each map became too small to read, and the layout hid change over time.</li>
+      <li>A gridded map from raw NetCDF files. The files ran too large for a static site, and regional averages told a clearer story.</li>
+      <li>One line per model. Eight lines per scenario cluttered the chart, so we show a mean line with a range band.</li>
+      <li>Absolute temperature instead of warming. Every map showed hot tropics and cold poles, so we switched to anomalies.</li>
+    </ul>
+
+    <h3>Development process</h3>
+    <p><b>Team split.</b> Raunak built the data pipeline: downloading the CMIP6 regional CSVs, computing anomalies, smoothing, and the multi-model statistics. He also made the exploratory graphs. Thalesh built the D3 map: projection, coastlines, color scales, legend and tooltips. Dhruv built the line chart, the ranked bar chart, the guided tour and the write-up. The whole team met to pick the question and review the design.</p>
+    <p><b>Time.</b> We spent about 40 people-hours: 12 on data access and processing, 6 on exploratory analysis, 16 on the D3 build, and 6 on the write-up, testing and deployment.</p>
+    <p><b>What took the most time.</b> Data access took the longest. The CMIP6 files on Google Cloud are large gridded NetCDF and Zarr files. We switched to the IPCC Atlas regional averages of the same CMIP6 runs. These small CSVs work on a static site. Next came linking all three views to one shared state (view, scenario, year, region) without bugs. The × global ratio also spiked in early years, when global warming sits near zero. We fixed this by hiding the ratio below 0.5 °C.</p>
+  </article>
+  <footer>Team 49 · Raunak Saluja · Thalesh Gupta · Dhruv Mittal · Built with D3.js v7 · Data: CMIP6 via IPCC-WG1 Atlas (CC-BY 4.0)</footer>
+</main>
+<div id="tip" role="tooltip"></div>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
